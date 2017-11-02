@@ -33,3 +33,10 @@ object ADTs {
   case object JsonNull extends JsonValue
 
 }
+
+package object MigrationADTs{
+  case class IceCreamV1(name: String, numCherries: Int, inCone: Boolean)
+  case class IceCreamV2a(name: String, numCherries: Int)                                  // Remove field
+  case class IceCreamV2b(name: String, inCone: Boolean, numCherries: Int)                 // Reorder field
+  case class IceCreamV2c(name: String, numCherries: Int, inCone: Boolean, numWaffles: Int)  // Insert field
+}

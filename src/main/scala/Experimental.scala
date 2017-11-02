@@ -3,10 +3,14 @@ import models.SeparateEncoders._
 import models.PairEncoder._
 import models.CsvEncoder._
 import models.ADTs._
+import models.MigrationADTs._
 import models.Second
 import models.Second._
+import ops.Penultimate._
+import ops.Migration._
 import shapeless.{::, HNil}
 
+/* Warning: Following is sheer mess, littered with print statements allover*/
 object Experimental extends App {
   val employees = List(
     Employee("Bill", 1, true),
@@ -66,6 +70,17 @@ object Experimental extends App {
     import models.JsonObjectEncoder._
     println(JsonEncoder[IceCream].encode(IceCream("sai", 90, false)))
     val shape: Shape = Circle(1.0)
-//    println(JsonEncoder[Shape].encode(shape)) //TODO fix the implicit here
+//    println(JsonEncoder[Shape].encode(shape)) //TODO fix the implicit here (Compiler crying over coproduct)
   }
+
+  //test Penultimate
+  type PList = String :: Int :: Boolean :: Double :: HNil
+  val  pList: PList = "bro" :: 1 :: true :: 4.20 :: HNil
+  println(pList.penultimate)
+  println(IceCream("Sundae", 1, false).penultimate)
+
+  //test Migration
+  println(IceCreamV1("Sundae", 1, false).migrateTo[IceCreamV2a])
+  println(IceCreamV1("Sundae", 1, false).migrateTo[IceCreamV2b])
+//  println(IceCreamV1("Sundae", 1, false).migrateTo[IceCreamV2c])  // TODO Another crying baby to look after
 }

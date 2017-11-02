@@ -47,7 +47,7 @@ object Second{
     * summon a Generic for a case class with exactly one field
     */
 
-  def getWrappedValue[A, Head, Repr <: HList, Tail <: HList](input: A)(
+  def getWrappedValue[A, Head, Repr <: HList](input: A)(
     implicit
     gen: Generic.Aux[A, Repr],  //find a generic with suitable Repr of A
     isHCons: IsHCons.Aux[Repr, Head, HNil]  //ensure it's length
