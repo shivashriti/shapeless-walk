@@ -1,6 +1,5 @@
 package models
 
-import models.SeparateEncoders._
 import models.ADTs._
 import shapeless.{HList, ::, HNil}
 import shapeless.{CNil, :+:, Inl, Inr, Coproduct}
@@ -9,9 +8,33 @@ import shapeless.{Generic, Lazy}
 /**
   * Created by Shiva on 11/10/2017.
   */
+
+//turn a value of type A into a row of CSV file
+trait CsvEncoder[A] {
+  def encode(value: A): List[String]
+}
+
 object CsvEncoder {
   //summoner method (preferred over implicitly)
   def apply[A](implicit enc: CsvEncoder[A]): CsvEncoder[A] = enc
+
+  def writeCsv[A](values: List[A])(implicit enc: CsvEncoder[A]): String =
+    values.map(value => enc.encode(value).mkString(",")).mkString("\n")
+
+  /*
+  // manual instance for custom data type.. OMG! never
+  implicit val employeeEncoder: CsvEncoder[Employee] = new CsvEncoder[Employee] {
+    override def encode(value: Employee): List[String] = List(
+      value.name, value.number.toString, if (value.manager) "yes" else "no"
+    )
+  }
+
+  // tuple encoder.. not needed anymore
+    implicit def pairEncoder[A, B](implicit aEncoder: CsvEncoder[A], bEncoder: CsvEncoder[B]): CsvEncoder[(A, B)] =
+    new CsvEncoder[(A, B)] {
+      def encode(value: (A, B)): List[String] = aEncoder.encode(value._1) ++ bEncoder.encode(value._2)
+    }
+  */
 
   //instance method
   def createEncoder[A](func: A => List[String]): CsvEncoder[A] = new CsvEncoder[A]{
@@ -30,11 +53,14 @@ object CsvEncoder {
   implicit def HListEncoder[H, T <: HList](implicit hEncoder: Lazy[CsvEncoder[H]], tEncoder: CsvEncoder[T]): CsvEncoder[H :: T] =
     createEncoder{ case h :: t => hEncoder.value.encode(h) ++ tEncoder.encode(t)}
 
+  /*
+  // single instance with generic Repr.. No Thanks
   implicit val laptopEncoder: CsvEncoder[Laptop] = {
     val gen = Generic[Laptop]
     val enc = CsvEncoder[gen.Repr]
     createEncoder(laptop => enc.encode(gen.to(laptop)))
   }
+  */
 
   //instance constructors for Coproduct
   implicit val CNilEncoder: CsvEncoder[CNil] =

@@ -23,15 +23,6 @@ object ADTs {
 
   case class Wrapper(value: Int)
 
-  // for tagged types and phantom types
-  sealed trait JsonValue
-  case class JsonObject(fields: List[(String, JsonValue)]) extends JsonValue
-  case class JsonArray(items: List[JsonValue]) extends JsonValue
-  case class JsonNumber(value: Double) extends JsonValue
-  case class JsonString(value: String) extends JsonValue
-  case class JsonBoolean(value: Boolean) extends JsonValue
-  case object JsonNull extends JsonValue
-
 }
 
 package object MigrationADTs{
